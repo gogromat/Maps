@@ -1,0 +1,155 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <!--Map set to 100%, not resizable by user-->
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map_canvas { height: 100% }
+    </style>
+    <!--Sensor means using GPS locator to determine the user's location-->
+    <script type="text/javascript" src="../common/scripts/jquery/jquery.js">
+    </script>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true">
+                                                            //sensor=set_to_true_or_false
+    </script>
+
+    <script type="text/javascript" src="http://code.google.com/apis/gears/gears_init.js">
+    </script>
+
+    <script type="text/javascript"
+            src="http://www.google.com/jsapi?key=ABQIAAAA-O3c-Om9OcvXMOJXreXHAxQGj0PqsCtxKvarsoS-iqLdqZSKfxS27kJqGZajBjvuzOBLizi931BUow">
+    </script>
+    
+    <script type="text/javascript">
+        var geocoder;
+
+        var initialLocation;
+
+        var browserSupportFlag =  new Boolean();
+
+        var map;
+
+        function detectBrowser() {
+            var useragent = navigator.userAgent;
+            var mapdiv = document.getElementById("map_canvas");
+
+            if (useragent.indexOf('iPhone') != -1 || useragent.indexOf('Android') != -1 )
+            {
+                mapdiv.style.width = '100%';
+                mapdiv.style.height = '100%';
+            }
+            else {
+                mapdiv.style.width = '600px';
+                mapdiv.style.height = '800px';
+            }
+        }
+
+        
+        function initialize() {
+            //var latlng = new google.maps.LatLng(-34.397, 150.644);
+            //var latlng = new google.maps.LatLng(40.65,-73.95);
+
+            geocoder = new google.maps.Geocoder();
+
+            //New York
+            var latlng = new google.maps.LatLng(40.69847032728747, -73.9514422416687);
+                    //google.loader.ClientLocation.latitude,
+                    //google.loader.ClientLocation.longitude);
+            var chicago = new google.maps.LatLng(41.850033, -87.6500523);
+
+            var myOptions = {
+              zoom: 14,
+              center: latlng,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+              //1.ROADMAP = normal, default 2D tiles
+              //2.SATELLITE = photographic tiles
+              //3.HYBRID = mix for features as roads, city names
+              //4.TERRAIN = physical relief (mountains, rivers, etc)
+              //If 2 & 3 , then map object can get setTile(45)
+            };
+            map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+            //map.setTile(45);
+        }
+
+        // Try W3C Geolocation (Preferred)
+        if(navigator.geolocation) {
+            browserSupportFlag = true;
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    initialLocation =
+                        new google.maps.LatLng(position.coords.latitude,
+                                               position.coords.longitude);
+                    map.setCenter(initialLocation);
+                }, function() {
+                    handleNoGeolocation(browserSupportFlag);
+            });
+        }
+
+        // Try Google Gears Geolocation
+        else if (google.gears) {
+            browserSupportFlag = true;
+            var geo = google.gears.factory.create('beta.geolocation');
+            geo.getCurrentPosition(
+                function(position) {
+                    initialLocation =
+                        new google.maps.LatLng(position.latitude,
+                                               position.longitude);
+                    map.setCenter(initialLocation);
+            }, function() {
+                    handleNoGeoLocation(browserSupportFlag);
+            });
+        }
+
+        // Browser doesn't support Geolocation
+        else {
+            browserSupportFlag = false;
+            handleNoGeolocation(browserSupportFlag);
+        }
+
+        function geoCodeAddress() {
+            var address = document.getElementById("address").value;
+            geocoder.geocode( {'address': address}, function (results, status) {
+                //geometry->location->{x:Pa;y:Qa}
+                // X coordinate
+                //console.log(results[0].geometry.location.Pa);
+                // Y coordinate
+                //console.log(results[0].geometry.location.Qa);
+
+                if (status = google.maps.GeocoderStatus.OK) {
+                    map.setCenter(results[0].geometry.location);
+                    // Map Marker
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        position: results[0].geometry.location
+                    });
+                    //console.log(results[0]);
+                }
+                else {
+                    alert("Geocode was not successful:" + status);
+                }
+            });
+
+            console.log(map.center.Pa);
+            console.log(map.center.Qa);
+
+        }
+    </script>
+
+</head>
+<body onload="initialize();">
+    <input style="position:absolute;z-index:1000;bottom:100px;left:400px;width:250px;"
+           type="text" value="Brighton Beach" name="address" id="address" />
+    <input style="position:absolute;z-index:1000;bottom:140px;left:400px;"
+           type="button" value="Geocode" onclick="geoCodeAddress();" />
+    <input style="position:absolute;z-index:1000;bottom:140px;left:480px;"
+           type="text" value="Milk" onclick="" />
+    <input style="position:absolute;z-index:1000;bottom:140px;left:600px;"
+           type="button" value="Go Milk!" onclick="" />
+    
+    <div id="map_canvas" style="width:100%; height:100%"></div>
+</body>
+</html>

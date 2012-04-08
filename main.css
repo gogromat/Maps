@@ -1,0 +1,50 @@
+        html {
+            height          : 100%;
+        }
+        body {
+            height          : 100%;
+            margin          : 0;
+            padding         : 0;
+        }
+        #map_canvas {
+            height          : 100%;
+            width           : 100%;
+        }
+        #map_control {
+            position        : absolute;
+            z-index         : 0;
+            right           : 20px;
+            top             : 50px;
+            height          : 580px;
+            width           : 550px;
+        }
+        .scrolling_pane {
+            height          : 500px;
+            width           : 200px;
+            overflow        : scroll;
+            border          : dashed 1px maroon;
+        }
+        .ui-autocomplete {
+            max-height      : 500px;
+            overflow-y      : auto;
+            overflow-x      : hidden;
+            padding-right   : 20px;
+        }
+        ul {
+            display         : table;
+        }
+        li, .row {
+            display         : table-row;
+        }
+        .left, .right, .middle {
+            display         : table-cell;
+        }
+        #sidebar {
+            width           : 200px;
+            height          : 500px;
+            position        : absolute;
+            z-index         : 1000;
+            left            : 0px;
+            background-color: #a9a9a9;
+            display         : table-cell;
+        }
